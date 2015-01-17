@@ -37,7 +37,8 @@ public class RadioLibrary extends HttpServlet  implements java.io.Serializable {
 		}
 
         if(this.radioLib.isEmpty()){
-         	radioLib.add(new Music("NBC-PELA ARTE","8_YBAxkmwgQ",0,0,3,38));
+         	radioLib.add(new Music("NBC-PELA ARTE","8_YBAxkmwgQ",0,0,5,1));
+
          	try {
 				save(fileName);
 			} catch (IOException e) {
@@ -53,6 +54,7 @@ public class RadioLibrary extends HttpServlet  implements java.io.Serializable {
 		PrintWriter out = response.getWriter();
 		
 		Music newSong = null;
+		String shuffleButton = request.getParameter("suffleButton");
 	    String newTitle = request.getParameter("newTitle");
 	    String newLink = request.getParameter("newLink");
 	   /* 
@@ -79,12 +81,12 @@ public class RadioLibrary extends HttpServlet  implements java.io.Serializable {
 					e.printStackTrace();
 				}
 	    }
-	    else{
+	    else if (shuffleButton != null){
 	    	Random generate = new Random();
     		int shuffle;
     		Music aux;
 	    	for(int i = 0; i < radioLib.size(); i++){
-	    		shuffle = generate.nextInt()%radioLib.size();
+	    		shuffle = generate.nextInt(radioLib.size());
 	    		aux =radioLib.get(i);
 	    		radioLib.set(i, radioLib.get(shuffle));
 	    		radioLib.set(shuffle, aux);
@@ -125,7 +127,7 @@ public class RadioLibrary extends HttpServlet  implements java.io.Serializable {
 			    "<input type=\"submit\" value=\"New Song\">" + 
 			    "</form>" + 
 			    "<form method=\"POST\">" + 
-			    "<input type=\"submit\" value=\"Shuffle Playlist\">" + 
+			    "<input type=\"submit\" name=\"suffleButton\" value=\"Shuffle Playlist\">" + 
 			    "</form>" + 
 				"</body>" + 
 				"</html>";
