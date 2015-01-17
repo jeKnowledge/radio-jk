@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebInitParam;
@@ -78,6 +79,18 @@ public class RadioLibrary extends HttpServlet  implements java.io.Serializable {
 					e.printStackTrace();
 				}
 	    }
+	    else{
+	    	Random generate = new Random();
+    		int shuffle;
+    		Music aux;
+	    	for(int i = 0; i < radioLib.size(); i++){
+	    		shuffle = generate.nextInt()%radioLib.size();
+	    		aux =radioLib.get(i);
+	    		radioLib.set(i, radioLib.get(shuffle));
+	    		radioLib.set(shuffle, aux);
+	    		System.out.println("Shuffle -> Element " + i + " with " + shuffle);
+			}
+	    }
 		
 		response.setIntHeader("Refresh", actualMusic.getRefreshTime());
 		out.println(generateHtmlFromMusic());
@@ -110,6 +123,9 @@ public class RadioLibrary extends HttpServlet  implements java.io.Serializable {
 				"</p>" +
 				"<form action=\"addNewSong.jsp\">" + 
 			    "<input type=\"submit\" value=\"New Song\">" + 
+			    "</form>" + 
+			    "<form method=\"POST\">" + 
+			    "<input type=\"submit\" value=\"Shuffle Playlist\">" + 
 			    "</form>" + 
 				"</body>" + 
 				"</html>";
