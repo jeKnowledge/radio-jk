@@ -12,10 +12,6 @@
 	<br />
 		Music Link from Youtube (Ex: https://www.youtube.com/watch?v=WWR0TBNFRRQ -> WWR0TBNFRRQ): <input type="text" name="newLink" />
 	<br />
-		Initial Time (Minute): <input type="text" name="newInitMin" />
-	<br />
-		Initial Time (Seconds): <input type="text" name="newInitSec" />		
-	<br />
 		Final Time (Minute): <input type="text" name="newFinalMin" />
 	<br />
 		Final Time (Seconds): <input type="text" name="newFinalSec" />		

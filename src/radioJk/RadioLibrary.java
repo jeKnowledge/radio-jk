@@ -1,11 +1,13 @@
 package radioJk;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Enumeration;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
@@ -15,19 +17,35 @@ import javax.servlet.http.HttpServletResponse;
 
 @SuppressWarnings("serial")
 @WebServlet(description = "RadioLib", urlPatterns = { "/QualeoMambo" , "/QualeoMambo.do"}, initParams = {@WebInitParam(name="id",value="1"),@WebInitParam(name="name",value="marcelino")})
-public class RadioLibrary extends HttpServlet {
+public class RadioLibrary extends HttpServlet  implements java.io.Serializable {
 	
 	public ArrayList <Music> radioLib = new ArrayList<Music>();
 	public Music actualMusic = null;
-	
+	public String fileName = "allSongsBackup";
     public RadioLibrary() {
         super();
+        
+		try {
+				load(fileName);
+		} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
         if(this.radioLib.isEmpty()){
-        	radioLib.add(new Music("Regula- + uma vez", "WWR0TBNFRRQ",0,0,0,15));
-         	radioLib.add(new Music("Summer - Calvin Harris", "jj2JyGwbeQ4",0,0,0,15));
-    		ActualSongRoutine.start();
+         	radioLib.add(new Music("NBC-PELA ARTE","8_YBAxkmwgQ",0,0,3,38));
+         	try {
+				save(fileName);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		
         }
+        ActualSongRoutine.start();
     }
     
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -36,16 +54,30 @@ public class RadioLibrary extends HttpServlet {
 		Music newSong = null;
 	    String newTitle = request.getParameter("newTitle");
 	    String newLink = request.getParameter("newLink");
+	   /* 
 	    String initMin = request.getParameter("newInitMin");
 	    String initSec = request.getParameter("newInitSec");
+	    
+	    Initial Time (Minute): <input type="text" name="newInitMin" />
+	<br />
+		Initial Time (Seconds): <input type="text" name="newInitSec" />		
+	<br />
+	    */
 	    String finalMin = request.getParameter("newFinalMin");
 	    String finalSec = request.getParameter("newFinalSec");
 	    
-	    if(newTitle != null && newLink != null && initMin != null && initSec != null && finalMin != null && finalSec != null){
-	 			newSong = new Music(newTitle, newLink, Integer.parseInt(initMin),  Integer.parseInt(initSec), Integer.parseInt(finalMin), Integer.parseInt(finalSec));
+	    if(newTitle != null && newLink != null && finalMin != null && finalSec != null){
+	 			newSong = new Music(newTitle, newLink,0,  0, Integer.parseInt(finalMin), Integer.parseInt(finalSec));
 	 			radioLib.add(newSong);
-	 			System.out.println("NEW SONG ADDED TO PLAYLIST ->Title: " + newTitle +" ->Url: " + newLink +" ->Start: " + initMin +":"+ initSec + " ->End: " + finalMin + ":" + finalSec);
-	 	 }
+	 			System.out.println("NEW SONG ADDED TO PLAYLIST ->Title: " + newTitle +" ->Url: " + newLink + " ->End: " + finalMin + ":" + finalSec);
+	 			
+	 			try {
+					save(fileName);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	    }
 		
 		response.setIntHeader("Refresh", actualMusic.getRefreshTime());
 		out.println(generateHtmlFromMusic());
@@ -76,6 +108,9 @@ public class RadioLibrary extends HttpServlet {
 				"<p>" +
 				listTitles + 
 				"</p>" +
+				"<form action=\"addNewSong.jsp\">" + 
+			    "<input type=\"submit\" value=\"New Song\">" + 
+			    "</form>" + 
 				"</body>" + 
 				"</html>";
 		
@@ -100,5 +135,31 @@ public class RadioLibrary extends HttpServlet {
 	     }
 	    }
 	};
+	
+	void save(String fileName) throws IOException {
+
+		FileOutputStream FOS = new FileOutputStream(fileName);
+		ObjectOutputStream OOS = new ObjectOutputStream(FOS);
+
+		for(int i = 0; i < radioLib.size(); i++)
+		{
+				OOS.writeObject(radioLib.get(i));
+		}
+		OOS.close();
+	}
+
+	void load(String fileName) throws IOException, ClassNotFoundException {
+
+		FileInputStream FIS = new FileInputStream(fileName);
+		ObjectInputStream OIS = new ObjectInputStream(FIS);
+
+		while(FIS.available() > 0)
+		{
+			radioLib.add((Music) OIS.readObject());
+		}	
+		OIS.close();
+	
+	
+	}
 	
 }

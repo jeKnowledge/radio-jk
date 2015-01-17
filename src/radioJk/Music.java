@@ -1,6 +1,7 @@
 package radioJk;
 
-public class Music {
+@SuppressWarnings("serial")
+public class Music  implements java.io.Serializable{
 	
 	private String title;
 	private String url;
